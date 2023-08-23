@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -63,7 +64,25 @@ namespace MyVirtualPet
             nomeDono = Console.ReadLine();
             Console.WriteLine("Legal estava com muita saudade de você, " + nomeDono + "!");
             //coletar os dados do pet no arquivo texto
-            
+            String file = "C:\\" + nome + nomeDono + ".txt";
+            if (File.Exists(file))
+            {
+                string[] dados = File.ReadAllLines(file);
+                alimentado = float.Parse(dados[2]);
+                limpo = float.Parse(dados[3]);
+                feliz = float.Parse(dados[4]);
+
+                if (alimentado <= 0 || limpo <= 0 || feliz <= 0)
+                {
+                    Console.WriteLine("Assistente Virtual.:");
+                    Console.WriteLine("O seu bichinho está muito fraco");
+                    Console.Write("Vamos cuidar dele pra você...");
+                    Console.WriteLine("Pronto, ele está saudável e feliz");
+                    alimentado = 100;
+                    limpo = 100;
+                    feliz = 100;
+                }
+            }
             //o programam principal
             entrada = "sim";
             while(entrada.ToLower() != "nada" && alimentado > 0 && limpo > 0 && feliz > 0)
@@ -85,12 +104,14 @@ namespace MyVirtualPet
 
                 }
                 Console.Clear();
-                
-                //Console.WriteLine("Alimentado.: " + alimentado);
-                //Console.WriteLine("Limpo.: " + limpo);
-                //Console.WriteLine("Feliz.: " + feliz);
 
-                if(alimentado > 40 && alimentado < 60)
+                Console.WriteLine("Alimentado.: " + alimentado);
+                Console.WriteLine("Limpo.: " + limpo);
+                Console.WriteLine("Feliz.: " + feliz);
+                Console.WriteLine("Olá! {0}", nomeDono);
+                Console.WriteLine(frases[rand.Next(frases.Length)]);
+
+                if (alimentado > 40 && alimentado < 60)
                 {
                     Console.WriteLine("Eu estou faminto!!!!!");
                     Console.WriteLine("Nada melhor do que um comidinha...");
@@ -109,10 +130,10 @@ namespace MyVirtualPet
                 Thread.Sleep(3000);
                 Console.Clear();
 
-                Console.WriteLine("Olá! {0}", nomeDono);
-                Console.WriteLine(frases[rand.Next(frases.Length)]);
+                
+                
                 Console.WriteLine("{0}, o que vamos fazer hoje? ", nomeDono);
-                Console.WriteLine("Brincar/Comer/Banho/nada.: ");
+                Console.Write("Brincar/Comer/Banho/nada.: ");
                 resposta = Console.ReadLine().ToLower();
 
                 switch (resposta)
@@ -148,6 +169,10 @@ namespace MyVirtualPet
             }
             
             Console.WriteLine("Até outro dia!!!");
+            //armazenar os dados
+
+
+
             Console.ReadKey();
         }
     }
