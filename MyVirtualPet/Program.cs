@@ -64,7 +64,8 @@ namespace MyVirtualPet
             nomeDono = Console.ReadLine();
             Console.WriteLine("Legal estava com muita saudade de você, " + nomeDono + "!");
             //coletar os dados do pet no arquivo texto
-            String file = "C:\\" + nome + nomeDono + ".txt";
+            String dir = Environment.CurrentDirectory + "\\";
+            String file = dir + nome + nomeDono + ".txt";
             if (File.Exists(file))
             {
                 string[] dados = File.ReadAllLines(file);
@@ -87,6 +88,10 @@ namespace MyVirtualPet
             entrada = "sim";
             while(entrada.ToLower() != "nada" && alimentado > 0 && limpo > 0 && feliz > 0)
             {
+                Console.Clear();
+                Console.WriteLine("Alimentado.: " + alimentado);
+                Console.WriteLine("Limpo.: " + limpo);
+                Console.WriteLine("Feliz.: " + feliz);
                 //alterar o status do pet
                 // 0 - perde alimento / 1 - perde limpeza / 2 - perde limpeza
                 caracteristica = rand.Next(3);
@@ -103,11 +108,7 @@ namespace MyVirtualPet
                         break;
 
                 }
-                Console.Clear();
-
-                Console.WriteLine("Alimentado.: " + alimentado);
-                Console.WriteLine("Limpo.: " + limpo);
-                Console.WriteLine("Feliz.: " + feliz);
+                
                 Console.WriteLine("Olá! {0}", nomeDono);
                 Console.WriteLine(frases[rand.Next(frases.Length)]);
 
@@ -170,8 +171,14 @@ namespace MyVirtualPet
             
             Console.WriteLine("Até outro dia!!!");
             //armazenar os dados
-
-
+            //criei os dados
+            String fileContent = nome + Environment.NewLine;
+            fileContent += nomeDono + Environment.NewLine;
+            fileContent += alimentado + Environment.NewLine;
+            fileContent += limpo + Environment.NewLine;
+            fileContent += feliz + Environment.NewLine;
+            //gravei no arquivo texto
+            File.WriteAllText(file, fileContent);
 
             Console.ReadKey();
         }
