@@ -6,11 +6,75 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Schema;
+using System.Drawing;
+using System.Security.Principal;
 
 namespace MyVirtualPet
 {
     internal class Program
     {
+        //inicio da imagem
+        static Bitmap ResizeImage(Bitmap image, int width, int height)
+        {
+            // Cria um novo Bitmap com a largura e altura desejadas
+            Bitmap resizedImage = new Bitmap(width, height);
+
+            // Desenha a imagem original no novo Bitmap usando as dimensões desejadas
+            using (Graphics graphics = Graphics.FromImage(resizedImage))
+            {
+                graphics.DrawImage(image, 0, 0, width, height);
+            }
+
+            return resizedImage;
+        }
+
+        static string ConvertToAscii(Bitmap image)
+        {
+            // Caracteres ASCII usados para representar a imagem
+            char[] asciiChars = { ' ', '.', ':', '-', '=', '+', '*', '#', '%', '@' };
+
+            StringBuilder asciiArt = new StringBuilder();
+
+            // Percorre os pixels da imagem e converte cada um em um caractere ASCII correspondente
+            for (int y = 0; y < image.Height; y++)
+            {
+                for (int x = 0; x < image.Width; x++)
+                {
+                    Color pixelColor = image.GetPixel(x, y);
+                    int grayScale = (pixelColor.R + pixelColor.G + pixelColor.B) / 3;
+                    int asciiIndex = grayScale * (asciiChars.Length - 1) / 255;
+                    char asciiChar = asciiChars[asciiIndex];
+                    asciiArt.Append(asciiChar);
+                }
+                asciiArt.Append(Environment.NewLine);
+            }
+
+            return asciiArt.ToString();
+        }
+
+        static void ExibirImagem(string imagePath, int width, int height)
+        {
+            // Caminho para a imagem que deseja exibir
+            //string imagePath = @"C:\Users\Danilo Filitto\Downloads\Panda.jpg";
+
+            // Carrega a imagem
+            Bitmap image = new Bitmap(imagePath);
+
+            // Redimensiona a imagem para a largura e altura desejadas
+            int consoleWidth = width;
+            int consoleHeight = height;
+            Bitmap resizedImage = ResizeImage(image, consoleWidth, consoleHeight);
+
+            // Converte a imagem em texto ASCII
+            string asciiArt = ConvertToAscii(resizedImage);
+
+            // Exibe o texto ASCII no console
+            Console.WriteLine(asciiArt);
+
+
+        }
+        //fim da imagem
         static void LerArquivoTexto(string nome, string nomeDono, ref float alimentado, ref float limpo, ref float feliz)
         {
             String dir = Environment.CurrentDirectory + "\\";
@@ -69,6 +133,15 @@ namespace MyVirtualPet
             string frase = frases[rand.Next(frases.Length)];
 
             return frase;
+        }
+
+        static void LerDados(ref string nome, ref string nomeDono)
+        {
+            Console.Write("Qual é o seu nome? ");
+            nomeDono = Console.ReadLine();
+            Console.Write("Qual é o nome do seu Pet Virtual? ");
+            nome = Console.ReadLine();
+            Console.WriteLine("Olá {0}, eu sou o seu bichinho virtual.", nomeDono );
         }
 
         static string Interagir(string nomeDono, ref float alimentado, ref float limpo, ref float feliz) 
@@ -162,35 +235,24 @@ namespace MyVirtualPet
         }
         static void Main(string[] args)
         {
-            string nome = "";
-            string nomeDono = "";
+            //dados do jogo
             string entrada = "";
-            
+            String foto = Environment.CurrentDirectory + "\\Panda.jpg";
+            string nomeDono = "";
+
+            //dados do pet
+            string nome = "";
+
             //Status do pet
             float alimentado = 100;
             float limpo = 100;
             float feliz = 100;
-
-            //diminuir os valores das características do pet
-                       
             
+            ExibirImagem(foto, 35, 20);
+
             Console.WriteLine("My Pet Virtual");
-            
-            //coleta de dados
-            //entrada de dados
-            if (args.Length > 0)
-            {
-                nome = args[0];
-            }
-            else
-            {
-                Console.Write("Qual é o nome do seu pet? ");
-                nome = Console.ReadLine();
-            }
 
-            Console.Write("Oi, qual o nome do meu dono? ");
-            nomeDono = Console.ReadLine();
-            Console.WriteLine("Legal estava com muita saudade de você, " + nomeDono + "!");
+            LerDados(ref nome, ref nomeDono);            
 
             //coletar os dados do pet no arquivo texto
             LerArquivoTexto(nome, nomeDono, ref alimentado, ref limpo, ref  feliz);
@@ -200,12 +262,13 @@ namespace MyVirtualPet
             entrada = "sim"; 
             while(entrada.ToLower() != "nada" && alimentado > 0 && limpo > 0 && feliz > 0)
             {
-                              
-                AtualizarStatus(ref alimentado, ref limpo, ref feliz);
-
                 Console.Clear();
                 Console.WriteLine("Olá! {0}", nomeDono);
                 Console.WriteLine(Falar());
+                Thread.Sleep(3000);
+
+                AtualizarStatus(ref alimentado, ref limpo, ref feliz);
+                Console.Clear();
 
                 ExibirStatus(alimentado, limpo, feliz, 1);
 
@@ -213,7 +276,6 @@ namespace MyVirtualPet
                 Console.Clear();
 
                 entrada = Interagir(nomeDono, ref alimentado, ref limpo, ref feliz);
-                
 
             }
             //saiu do jogo
